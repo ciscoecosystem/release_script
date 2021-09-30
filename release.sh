@@ -1,4 +1,4 @@
- #!/bin/bash
+#!/bin/bash
 # This is script to get latest version of collection and install antsibull
 
 # cd to directory of the collection
