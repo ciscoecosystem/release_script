@@ -4,3 +4,5 @@ target_version = 1.4.0
 collection_name = mso
 directory = /Users/cizhao/ansible-mso/ansible-mso
 remote_branch = origin
+galaxy_key = 6807bdc1da2e0b2a3f6a132a6daf41e43004a0ec
+galaxy_namespace = xinyuezhao18

@@ -15,7 +15,8 @@ repo_url = config['settings']['repo_url']
 target_version = config['settings']['target_version']
 latest = requests.get('{0}/releases/latest'.format(repo_url))
 latest_version = latest.json().get('tag_name')
-collection_name = 'ansible-' + config['settings']['collection_name']
+collection = config['settings']['collection_name']
+collection_name = 'ansible-' + collection
 url = '{0}/compare/{1}...master'.format(repo_url, latest_version)
 
 r = requests.get(url)
@@ -47,11 +48,14 @@ if menu_entry_index == 0:
         commit_message = commit.get('commit').get('message')
         if commit_message.startswith('bugfixes'):
             bug.append(commit_message[len('bugfixes')+2:])
-        if commit_message.startswith('minor_changes'):
+        elif commit_message.startswith('minor_changes'):
             minor.append(commit_message[len('minor_changes')+2:])
-        if commit_message.startswith('major_changes'):
+        elif commit_message.startswith('major_changes'):
             major.append(commit_message[len('major_changes')+2:])
-        untagged.append(commit_message)
+        elif commit_message.startswith('ignore_changes'):
+            pass
+        else:
+            untagged.append(commit_message)
 
     release_date = datetime.date.today()
 
@@ -91,16 +95,14 @@ if menu_entry_index == 0:
     with open(galaxy_path, 'w') as f:
         f.writelines(data)
 
-    # with open(galaxy_path) as f:
-    #     galaxyMap = yaml.safe_load(f)
-    #     galaxyMap['version'] = target_version
-    # with open(galaxy_path, 'w') as f:
-    #     yaml.dump(galaxyMap, f)
-
-    # # 4. Update CHANGELOG.rst & galaxy.yml and push a releasing PR
-    # os.system("chmod +x update_changelog.sh && ./update_changelog.sh {0} {1} {2}".format(directory, config['settings']['collection_name'], target_version))
+    # 4. Update CHANGELOG.rst & galaxy.yml and push a releasing PR
+    prName = "release_" + target_version
+    os.system("chmod +x update_changelog.sh && ./update_changelog.sh {0} {1}".format(directory, prName))
 else:
-    # 5. Write release body content
+    # get latest code after PR merged
+    os.system("chmod +x get_code.sh && ./get_code.sh {0} {1} {2} {3}".format(directory, config['settings']['collection_name'], target_version, remote_branch))
+    
+    # 5. Write release body content accoding to changelog.yml
     with open(change_log_path) as f:
         dataMap = yaml.safe_load(f)
         change_content = dataMap['releases'][target_version]['changes']
@@ -109,8 +111,20 @@ else:
         yaml.dump(change_content, f)
         f.write("3. Detailed changelog: https://github.com/xinyuezhao/ansible-mso/compare/{0}...v{1}".format(latest_version, target_version))
 
-    # 6. Public release in github galaxy
-    os.system("chmod +x release_galaxy.sh && ./release_galaxy.sh {0} {1} {2} {3}".format(directory, config['settings']['collection_name'], target_version, remote_branch))
+    # 6. Public release in github release
+    print("releasing in github release")
+    os.system("chmod +x release_galaxy.sh && ./release_galaxy.sh {0} {1} {2}".format(directory, config['settings']['collection_name'], target_version))
 
     # 7. Publish release in Galaxy
+    # ansible-galaxy collection publish xinyuezhao18-mso-1.4.0.tar.gz --api-key=6807bdc1da2e0b2a3f6a132a6daf41e43004a0ec 
+    # by default distribuiting server will be ansible galaxy 
+    print("releasing in ansible galaxy")
+    galaxy_key = config['settings']['galaxy_key']
+    galaxy_ns = config['settings']['galaxy_namespace']
+    galaxy_path = "{0}-{1}-{2}.tar.gz".format(galaxy_ns, collection, target_version)
+    os.system("chmod +x galaxy.sh && ./galaxy.sh {0} {1}".format(galaxy_path, galaxy_key))
+
+    # TODO: add an ansible.cfg file defining server&api-key
+    
     # 8. Publish release in RedHat automation hub
+    # ansible-galaxy collection publish xinyuezhao18-mso-1.4.0.tar.gz --server --api-key=xxx

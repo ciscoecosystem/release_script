@@ -2,19 +2,20 @@
 
 # 1. Update CHANGELOG.rst
 cd $1/..
-source env/bin/activate
-cd $1
+# source env/bin/activate
+# cd $1
 antsibull-changelog release -v
 
-# 2. Update galaxy.yml
-
-# 3. Push updated files to repo
+# 2. Push updated files to repo
+cat ./changelogs/changelog.yaml
 git add -u
 git status
 git commit -m 'Update change log & galaxy.yml'
 git clean -f -d
-# FIXED: make a PR for this commit
+# TODO: gh make pr without interface
 
-# 4. Create a releasing PR and wait for it merged
-gh pr create
+# 3. Create a releasing PR and wait for it merged
+# close the pr with the same name
+gh pr close $2
+gh pr create --title $2 --body ""
 
