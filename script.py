@@ -115,11 +115,12 @@ else:
     # 7. Publish release in Galaxy
     # ansible-galaxy collection publish xinyuezhao18-mso-1.4.0.tar.gz --api-key=6807bdc1da2e0b2a3f6a132a6daf41e43004a0ec 
     # by default distribuiting server will be ansible galaxy 
-    print("releasing in ansible galaxy")
-    galaxy_key = config['settings']['galaxy_key']
-    galaxy_ns = config['settings']['galaxy_namespace']
-    galaxy_path = "{0}-{1}-{2}.tar.gz".format(galaxy_ns, collection, target_version)
-    os.system("chmod +x galaxy.sh && ./galaxy.sh {0} {1}".format(galaxy_path, galaxy_key))
+
+    # print("releasing in ansible galaxy")
+    # galaxy_key = config['settings']['galaxy_key']
+    # galaxy_ns = config['settings']['galaxy_namespace']
+    # galaxy_path = "{0}-{1}-{2}.tar.gz".format(galaxy_ns, collection, target_version)
+    # os.system("chmod +x galaxy.sh && ./galaxy.sh {0} {1}".format(galaxy_path, galaxy_key))
 
     # TODO: add an ansible.cfg file defining server&api-key
     
