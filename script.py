@@ -65,12 +65,9 @@ if menu_entry_index == 0:
         ),
         release_date = str(release_date)
     )
-    if bug:
-        change_log['changes']['bugfixes'] = bug
-    if minor:
-        change_log['changes']['minor_changes'] = minor
-    if major:
-        change_log['changes']['major_changes'] = major
+    change_log['changes']['bugfixes'] = bug
+    change_log['changes']['minor_changes'] = minor
+    change_log['changes']['major_changes'] = major
 
     if untagged:
         change_log['changes']['untagged'] = untagged
@@ -97,7 +94,7 @@ if menu_entry_index == 0:
 
     # 4. Update CHANGELOG.rst & galaxy.yml and push a releasing PR
     prName = "release_" + target_version
-    os.system("chmod +x update_changelog.sh && ./update_changelog.sh {0} {1}".format(directory, prName))
+    os.system("chmod +x update_changelog.sh && ./update_changelog.sh {0} {1} {2}".format(directory, prName, remote_branch))
 else:
     # get latest code after PR merged
     os.system("chmod +x get_code.sh && ./get_code.sh {0} {1} {2} {3}".format(directory, config['settings']['collection_name'], target_version, remote_branch))
