@@ -7,7 +7,7 @@ cd $1
 # 1. Create a new branch release_{target_version} and get latest version
 git checkout master
 git fetch $2 master
-git reset --hard origin/master
+git reset --hard $2/master
 git branch -D $3
 git checkout -b $3
 

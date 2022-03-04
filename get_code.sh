@@ -3,7 +3,7 @@
 cd $1
 git checkout master
 git fetch $4 master
-git reset --hard origin/master
+git reset --hard $4/master
 git branch -D $3
 git checkout -b $3
 
