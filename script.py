@@ -1,10 +1,10 @@
 # script to collect commit message
 #!/usr/bin/python
-from simple_term_menu import TerminalMenu
+# from simple_term_menu import TerminalMenu
 import requests
-import sys
+# import sys
 import yaml
-import configparser
+# import configparser
 import datetime
 import os
 
