@@ -1,6 +1,0 @@
-[settings]
-repo_url = https://api.github.com/repos/CiscoDevNet/ansible-aci
-target_version = 2.1.0
-collection_name = aci
-directory = /Users/cizhao/ansible-aci
-remote_branch = origin
