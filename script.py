@@ -123,7 +123,7 @@ with open(galaxy_path, 'w') as f:
     f.writelines(data)
 
 # 4. Update CHANGELOG.rst & galaxy.yml and push a releasing PR
-prName = "release_" + target_version
+prName = "release_PR"
 os.system("chmod +x update_changelog.sh && ./update_changelog.sh {0} {1} {2}".format(directory, prName, "origin"))
 # else:
 #     # get latest code after PR merged
