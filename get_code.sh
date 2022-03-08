@@ -1,6 +1,7 @@
 #!/bin/bash
 # 1. Get latest version after releasing PR merged
 cd $1
+git remote -v
 git checkout master
 git fetch $4 master
 git reset --hard $4/master

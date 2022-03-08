@@ -5,6 +5,7 @@
 # directory is absolute path
 cd $1
 # 1. Create a new branch release_{target_version} and get latest version
+git remote -v
 git checkout master
 git fetch $2 master
 git reset --hard $2/master

@@ -52,6 +52,11 @@ script_dir = "./release_script"
 remote_branch = "origin"
 change_log_path = '{0}/changelogs/changelog.yaml'.format(directory)
 
+# print repo, repo_url
+print("the repo is " + repo)
+print("the repo_url is " + repo_url)
+print("the url is " + url)
+
 # options = ["Update changelog and create a releasing PR", "Build collection and release"]
 # terminal_menu = TerminalMenu(options)
 # menu_entry_index = terminal_menu.show()
