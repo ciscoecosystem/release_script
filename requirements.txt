@@ -1,4 +1,7 @@
 requests
 PyYAML
 datetime
-os
+urllib3
+certifi
+charset-normalizer
+idna
