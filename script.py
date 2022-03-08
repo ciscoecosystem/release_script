@@ -45,6 +45,7 @@ untagged = []
 # collection directory in github action ubuntu
 # directory = config['settings']['directory']
 directory = "./collection"
+script_dir = "./release_script"
 
 # remote branch is defined in github action as origin
 # remote_branch = config['settings']['remote_branch']
@@ -57,7 +58,7 @@ change_log_path = '{0}/changelogs/changelog.yaml'.format(directory)
 # if menu_entry_index == 0:
     # 1. Create a new branch release_{target_version} and get latest version
     # os.system("cd {0} && git checkout master && git branch -D release_{1} && git checkout -b release_{2}".format(directory, target_version, target_version))
-os.system("chmod +x release.sh && ./release.sh {0} {1} release_{2}".format(directory, remote_branch, "changelog"))
+os.system("chmod +x {0}/release.sh && {1}/release.sh {2} {3} {4}".format(script_dir, script_dir, directory, remote_branch, "changelog"))
 
 # 2. Update changelog.yml
 # put all commit msg without prefix into untagged list
@@ -124,7 +125,7 @@ with open(galaxy_path, 'w') as f:
 
 # 4. Update CHANGELOG.rst & galaxy.yml and push a releasing PR
 prName = "release_PR"
-os.system("chmod +x update_changelog.sh && ./update_changelog.sh {0} {1} {2}".format(directory, prName, "origin"))
+os.system("chmod +x {0}/update_changelog.sh && {1}/update_changelog.sh {2} {3} {4}".format(script_dir, script_dir, directory, prName, "origin"))
 # else:
 #     # get latest code after PR merged
 #     os.system("chmod +x get_code.sh && ./get_code.sh {0} {1} {2} {3}".format(directory, config['settings']['collection_name'], target_version, remote_branch))
