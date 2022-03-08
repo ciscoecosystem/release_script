@@ -44,7 +44,7 @@ untagged = []
 # directory is an absolute path
 # collection directory in github action ubuntu
 # directory = config['settings']['directory']
-directory = "./collection/" + collection_name 
+directory = "./collection"
 
 # remote branch is defined in github action as origin
 # remote_branch = config['settings']['remote_branch']
