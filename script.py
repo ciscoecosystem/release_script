@@ -109,7 +109,7 @@ with open(change_log_path, 'w') as f:
     yaml.dump(dataMap, f)
 
 # edit changelog.yaml as we want
-os.system("vim {0}".format(change_log_path))
+# os.system("vim {0}".format(change_log_path))
 
 # 3. Update galaxy.yml
 galaxy_path = '{0}/galaxy.yml'.format(directory)
