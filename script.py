@@ -17,6 +17,8 @@ import os
 # repo_url = config['settings']['repo_url']
 repo = os.getenv('GITHUB_REPOSITORY')
 repo_url = "https://api.github.com/repos/" + repo
+github_token = os.getenv('GITHUB_TOKEN')
+print(github_token)
 
 # parse var repo to get the collection name
 # collection = config['settings']['collection_name']
