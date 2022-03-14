@@ -15,7 +15,7 @@ git add -u
 git status
 git commit -m 'Update change log & galaxy.yml'
 # push branch to the remote repo where you want to create the PR
-# git push --set-upstream origin changelog
+git push --set-upstream origin $2
 git push -f $3
 git clean -f -d
 

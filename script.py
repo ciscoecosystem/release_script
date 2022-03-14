@@ -18,7 +18,7 @@ import os
 repo = os.getenv('GITHUB_REPOSITORY')
 repo_url = "https://api.github.com/repos/" + repo
 github_token = os.getenv('GITHUB_TOKEN')
-print(github_token)
+prName = "release_PR"
 
 # parse var repo to get the collection name
 # collection = config['settings']['collection_name']
@@ -65,7 +65,7 @@ print("the url is " + url)
 # if menu_entry_index == 0:
     # 1. Create a new branch release_{target_version} and get latest version
     # os.system("cd {0} && git checkout master && git branch -D release_{1} && git checkout -b release_{2}".format(directory, target_version, target_version))
-os.system("chmod +x {0}/release.sh && {1}/release.sh {2} {3} {4}".format(script_dir, script_dir, directory, remote_branch, "changelog"))
+os.system("chmod +x {0}/release.sh && {1}/release.sh {2} {3} {4}".format(script_dir, script_dir, directory, remote_branch, prName))
 
 # 2. Update changelog.yml
 # put all commit msg without prefix into untagged list
@@ -131,7 +131,6 @@ with open(galaxy_path, 'w') as f:
     f.writelines(data)
 
 # 4. Update CHANGELOG.rst & galaxy.yml and push a releasing PR
-prName = "release_PR"
 os.system("chmod +x {0}/update_changelog.sh && {1}/update_changelog.sh {2} {3} {4}".format(script_dir, script_dir, directory, prName, "origin"))
 # else:
 #     # get latest code after PR merged
