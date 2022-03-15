@@ -18,7 +18,7 @@ import os
 repo = os.getenv('GITHUB_REPOSITORY')
 repo_url = "https://api.github.com/repos/" + repo
 github_token = os.getenv('GITHUB_TOKEN')
-prName = "release_PR"
+pr_name = "release_pr"
 
 # parse var repo to get the collection name
 # collection = config['settings']['collection_name']
@@ -30,12 +30,17 @@ collection_name = repo.split("/")[1]
 
 latest = requests.get('{0}/releases/latest'.format(repo_url))
 latest_version = latest.json().get('tag_name')
+print("The latest release: " + latest_version)
 
 url = '{0}/compare/{1}...master'.format(repo_url, latest_version)
 
 r = requests.get(url)
 result = r.json()
 commits = result.get('commits')
+
+print("The repo is " + repo)
+print("The repo_url is " + repo_url)
+print("The compare url is " + url)
 
 bug = []
 minor = []
@@ -54,23 +59,19 @@ script_dir = "./release_script"
 remote_branch = "origin"
 change_log_path = '{0}/changelogs/changelog.yaml'.format(directory)
 
-# print repo, repo_url
-print("the repo is " + repo)
-print("the repo_url is " + repo_url)
-print("the url is " + url)
-
 # options = ["Update changelog and create a releasing PR", "Build collection and release"]
 # terminal_menu = TerminalMenu(options)
 # menu_entry_index = terminal_menu.show()
 # if menu_entry_index == 0:
     # 1. Create a new branch release_{target_version} and get latest version
     # os.system("cd {0} && git checkout master && git branch -D release_{1} && git checkout -b release_{2}".format(directory, target_version, target_version))
-os.system("chmod +x {0}/release.sh && {1}/release.sh {2} {3} {4}".format(script_dir, script_dir, directory, remote_branch, prName))
+os.system("chmod +x {0}/create_branch.sh && {1}/create_branch.sh {2} {3} {4}".format(script_dir, script_dir, directory, remote_branch, pr_name))
 
 # 2. Update changelog.yml
 # put all commit msg without prefix into untagged list
 for commit in commits:
-    commit_message = commit.get('commit').get('message')
+    commit_message = commit.get('commit').get('message').replace('\n\n', ' ')
+    print("Commit Message: " + commit_message)
     if commit_message.startswith('bugfixes'):
         bug.append(commit_message[len('bugfixes')+2:])
     elif commit_message.startswith('minor_changes'):
@@ -81,6 +82,11 @@ for commit in commits:
         pass
     else:
         untagged.append(commit_message)
+
+print("The untagged commits are: " + str(untagged))
+print("The bug commits are: " + str(bug))
+print("The minor commits are: " + str(minor))
+print("The major commits are: " + str(major))
 
 release_date = datetime.date.today()
 
@@ -107,8 +113,10 @@ change_log['changes']['bugfixes'] = bug
 change_log['changes']['minor_changes'] = minor
 change_log['changes']['major_changes'] = major
 
-if untagged:
+if len(untagged) > 0:
     change_log['changes']['untagged'] = untagged
+
+print("Changelog: " + str(change_log))
 
 with open(change_log_path) as f:
     dataMap = yaml.safe_load(f)
@@ -131,7 +139,7 @@ with open(galaxy_path, 'w') as f:
     f.writelines(data)
 
 # 4. Update CHANGELOG.rst & galaxy.yml and push a releasing PR
-os.system("chmod +x {0}/update_changelog.sh && {1}/update_changelog.sh {2} {3} {4}".format(script_dir, script_dir, directory, prName, "origin"))
+os.system("chmod +x {0}/update_changelog.sh && {1}/update_changelog.sh {2} {3} {4}".format(script_dir, script_dir, directory, pr_name, target_version))
 # else:
 #     # get latest code after PR merged
 #     os.system("chmod +x get_code.sh && ./get_code.sh {0} {1} {2} {3}".format(directory, config['settings']['collection_name'], target_version, remote_branch))

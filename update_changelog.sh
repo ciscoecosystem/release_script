@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # 1. Update CHANGELOG.rst
-cd $1/..
-source env/bin/activate
+# cd $1/..
+# source env/bin/activate
 cd $1
-
+cat ./changelogs/changelog.yaml
 antsibull-changelog release -v
 
 # 2. Push updated files to repo
@@ -14,7 +14,7 @@ git config user.name "dcn-ecosystem"
 cat ./changelogs/changelog.yaml
 git add -u
 git status
-git commit -m 'Update change log & galaxy.yml'
+git commit -m "[ignore] Update Changelog for new release (v$3)"
 # push branch to the remote repo where you want to create the PR
 git push -f origin $2
 git clean -f -d
