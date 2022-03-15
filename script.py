@@ -45,7 +45,7 @@ print("The compare url is " + url)
 bug = []
 minor = []
 major = []
-untagged = []
+trivial = []
 
 # cd to directory of the collection
 # directory is an absolute path
@@ -68,7 +68,7 @@ change_log_path = '{0}/changelogs/changelog.yaml'.format(directory)
 os.system("chmod +x {0}/create_branch.sh && {1}/create_branch.sh {2} {3} {4}".format(script_dir, script_dir, directory, remote_branch, pr_name))
 
 # 2. Update changelog.yml
-# put all commit msg without prefix into untagged list
+# put all commit msg without prefix into trivial list
 for commit in commits:
     commit_message = commit.get('commit').get('message').replace('\n\n', ' ')
     print("Commit Message: " + commit_message)
@@ -81,9 +81,9 @@ for commit in commits:
     elif commit_message.startswith('ignore_changes'):
         pass
     else:
-        untagged.append(commit_message)
+        trivial.append(commit_message)
 
-print("The untagged commits are: " + str(untagged))
+print("The trivial commits are: " + str(trivial))
 print("The bug commits are: " + str(bug))
 print("The minor commits are: " + str(minor))
 print("The major commits are: " + str(major))
@@ -113,8 +113,8 @@ change_log['changes']['bugfixes'] = bug
 change_log['changes']['minor_changes'] = minor
 change_log['changes']['major_changes'] = major
 
-if len(untagged) > 0:
-    change_log['changes']['untagged'] = untagged
+if len(trivial) > 0:
+    change_log['changes']['trivial'] = trivial
 
 print("Changelog: " + str(change_log))
 
