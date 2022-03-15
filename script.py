@@ -109,11 +109,14 @@ change_log = dict(
     ),
     release_date = str(release_date)
 )
-change_log['changes']['bugfixes'] = bug
-change_log['changes']['minor_changes'] = minor
-change_log['changes']['major_changes'] = major
 
-if len(trivial) > 0:
+if len(bug) > 0:
+    change_log['changes']['bugfixes'] = bug
+elif len(minor) > 0:
+    change_log['changes']['minor_changes'] = minor
+elif len(major) > 0:
+    change_log['changes']['major_changes'] = major
+else:
     change_log['changes']['trivial'] = trivial
 
 print("Changelog: " + str(change_log))
