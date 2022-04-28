@@ -154,11 +154,11 @@ change_log = dict(
 
 if len(bug) > 0:
     change_log['changes']['bugfixes'] = bug
-elif len(minor) > 0:
+if len(minor) > 0:
     change_log['changes']['minor_changes'] = minor
-elif len(major) > 0:
+if len(major) > 0:
     change_log['changes']['major_changes'] = major
-else:
+if len(trivial):
     change_log['changes']['trivial'] = trivial
 
 print("Changelog: " + str(change_log))
