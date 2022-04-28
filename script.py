@@ -7,6 +7,7 @@ import yaml
 # import configparser
 import datetime
 import os
+import re
 
 # config = configparser.ConfigParser()
 # # add condition
@@ -70,7 +71,10 @@ os.system("chmod +x {0}/create_branch.sh && {1}/create_branch.sh {2} {3} {4}".fo
 # 2. Update changelog.yml
 # put all commit msg without prefix into trivial list
 for commit in commits:
-    commit_message = commit.get('commit').get('message').replace('\n\n', ' ')
+    # detect whether the commit msg is multiple line, if so, split into different commit msg
+    # rm single quote
+    # use regex to match
+    commit_message = commit.get('commit').get('message')
     print("Commit Message: " + commit_message)
     if commit_message.startswith('bugfixes'):
         bug.append(commit_message[len('bugfixes')+2:])
@@ -174,3 +178,30 @@ os.system("chmod +x {0}/update_changelog.sh && {1}/update_changelog.sh {2} {3} {
     
 #     # 8. Publish release in RedHat automation hub
 #     # ansible-galaxy collection publish xinyuezhao18-mso-1.4.0.tar.gz --server --api-key=xxx
+
+def parse_commit_msg(commit_str):
+    # return a list [commit_type, commit_msg]
+    commit_line=re.sub(r'''['\n]+''', ' ', commit_str)
+    commit_match = re.match(r'''^['\s]*\[?([\w\s-]+)\s*\]?:?\s*(.+)['\s]*$''', commit_line)
+    if commit_match:
+        commit_groups = commit_match.groups()
+        commit_type = commit_groups[0]
+        commit_msg = commit_groups[1]
+    else:
+        commit_type = "trivial"
+        commit_msg = commit_line
+    return [commit_type, commit_msg]
+
+def parse_commit_type(commit_type):
+    if re.search("bug", commit_type.lower()):
+        res_type = "bugfixes"
+    elif re.search("major", commit_type.lower()):
+        res_type = "major_changes"
+    elif re.search("minor", commit_type.lower()):
+        res_type = "minor_changes"
+    elif re.search("ignore", commit_type.lower()):
+        res_type = "ignore_changes"
+    else:
+        res_type = "trivial"
+    return res_type
+

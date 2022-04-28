@@ -21,6 +21,8 @@ git clean -f -d
 
 # 3. Create a releasing PR and wait for it merged
 # close the pr with the same name
+# TODO:force update release pr instead of close it
+gh pr list --author "@me"
 gh pr close $2
 gh pr create --title $2 --body ""
 
