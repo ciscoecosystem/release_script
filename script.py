@@ -9,6 +9,40 @@ import datetime
 import os
 import re
 
+
+def parse_commit_msg(commit_str):
+    # return a list [commit_type, commit_msg]
+    commit_line=re.sub(r'''['\n]+''', ' ', commit_str)
+    commit_match = re.match(r'''^['\s]*\[?([\w\s-]+)\s*\]?:?\s*(.+)['\s]*$''', commit_line)
+    if commit_match:
+        commit_groups = commit_match.groups()
+        commit_type = commit_groups[0]
+        commit_msg = commit_groups[1]
+    else:
+        commit_type = "trivial"
+        commit_msg = commit_line
+    return commit_type, commit_msg
+
+def parse_commit_type(commit_type):
+    if re.search("bug", commit_type.lower()):
+        res_type = "bugfixes"
+    elif re.search("major", commit_type.lower()):
+        res_type = "major_changes"
+    elif re.search("minor", commit_type.lower()):
+        res_type = "minor_changes"
+    elif re.search("ignore", commit_type.lower()):
+        res_type = "ignore_changes"
+    else:
+        res_type = "trivial"
+    return res_type
+
+def parse_commit_content(commit_msg):
+    res_msg = commit_msg
+    if re.match(r'''^[a-z]''', commit_msg):
+        res_msg = commit_msg[0].upper() + commit_msg[1:]
+    return res_msg
+
+
 # config = configparser.ConfigParser()
 # # add condition
 # config.read(sys.argv[1])
@@ -76,16 +110,20 @@ for commit in commits:
     # use regex to match
     commit_message = commit.get('commit').get('message')
     print("Commit Message: " + commit_message)
-    if commit_message.startswith('bugfixes'):
-        bug.append(commit_message[len('bugfixes')+2:])
-    elif commit_message.startswith('minor_changes'):
-        minor.append(commit_message[len('minor_changes')+2:])
-    elif commit_message.startswith('major_changes'):
-        major.append(commit_message[len('major_changes')+2:])
-    elif commit_message.startswith('ignore_changes'):
+    commit_type, commit_msg = parse_commit_msg(commit_message)
+    parsed_commit_type = parse_commit_type(commit_type)
+    parsed_commit_content = parse_commit_content(commit_msg)
+
+    if parsed_commit_type == 'bugfixes':
+        bug.append(parsed_commit_content)
+    elif parsed_commit_type == 'minor_changes':
+        minor.append(parsed_commit_content)
+    elif parsed_commit_type == 'major_changes':
+        major.append(parsed_commit_content)
+    elif parsed_commit_type == 'ignore_changes':
         pass
     else:
-        trivial.append(commit_message)
+        trivial.append(parsed_commit_content)
 
 print("The trivial commits are: " + str(trivial))
 print("The bug commits are: " + str(bug))
@@ -179,29 +217,4 @@ os.system("chmod +x {0}/update_changelog.sh && {1}/update_changelog.sh {2} {3} {
 #     # 8. Publish release in RedHat automation hub
 #     # ansible-galaxy collection publish xinyuezhao18-mso-1.4.0.tar.gz --server --api-key=xxx
 
-def parse_commit_msg(commit_str):
-    # return a list [commit_type, commit_msg]
-    commit_line=re.sub(r'''['\n]+''', ' ', commit_str)
-    commit_match = re.match(r'''^['\s]*\[?([\w\s-]+)\s*\]?:?\s*(.+)['\s]*$''', commit_line)
-    if commit_match:
-        commit_groups = commit_match.groups()
-        commit_type = commit_groups[0]
-        commit_msg = commit_groups[1]
-    else:
-        commit_type = "trivial"
-        commit_msg = commit_line
-    return [commit_type, commit_msg]
-
-def parse_commit_type(commit_type):
-    if re.search("bug", commit_type.lower()):
-        res_type = "bugfixes"
-    elif re.search("major", commit_type.lower()):
-        res_type = "major_changes"
-    elif re.search("minor", commit_type.lower()):
-        res_type = "minor_changes"
-    elif re.search("ignore", commit_type.lower()):
-        res_type = "ignore_changes"
-    else:
-        res_type = "trivial"
-    return res_type
 
