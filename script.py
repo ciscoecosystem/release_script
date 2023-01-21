@@ -9,6 +9,9 @@ import datetime
 import os
 import re
 
+class Dumper(yaml.Dumper):
+    def increase_indent(self, flow=False, *args, **kwargs):
+        return super().increase_indent(flow=flow, indentless=False)
 
 def parse_commit_msg(commit_str):
     # return a list [commit_type, commit_msg]
@@ -183,7 +186,19 @@ with open(galaxy_path, 'r') as f:
 with open(galaxy_path, 'w') as f:
     f.writelines(data)
 
-# 4. Update CHANGELOG.rst & galaxy.yml and push a releasing PR
+# 4. Update meta/runtime.yml
+meta_runtime_path = '{0}/meta/runtime.yml'.format(directory)
+modules_path = '{0}/plugins/modules/'.format(directory)
+aci_action_group = [f[:-3] for f in os.listdir(modules_path) if os.path.isfile(os.path.join(modules_path, f)) and f.startswith('aci_')]
+aci_action_group.sort()
+print("The action_group modules are: " + str(aci_action_group))
+with open(meta_runtime_path) as f:
+    dataRuntimeMap = yaml.safe_load(f)
+    dataRuntimeMap['action_groups']['aci'] = aci_action_group
+with open(meta_runtime_path, 'w') as f:
+    yaml.dump(dataRuntimeMap, f, sort_keys=False, default_flow_style=False, explicit_start=True, Dumper=Dumper)
+
+# 5. Update CHANGELOG.rst & galaxy.yml and push a releasing PR
 os.system("chmod +x {0}/update_changelog.sh && {1}/update_changelog.sh {2} {3} {4}".format(script_dir, script_dir, directory, pr_name, target_version))
 # else:
 #     # get latest code after PR merged
