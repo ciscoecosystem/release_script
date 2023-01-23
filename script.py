@@ -62,12 +62,17 @@ pr_name = "release_pr"
 # collection = config['settings']['collection_name']
 # collection_name = 'ansible-' + collection
 collection_name = repo.split("/")[1]
+product_name = collection_name.split("-")[1]
 
 # target version can be proposed while generating changlog file
 # target_version = config['settings']['target_version']
+latest_version = None
+for i in range(10):
+    latest = requests.get('{0}/releases/latest'.format(repo_url))
+    latest_version = latest.json().get('tag_name')
+    if latest_version is not None:
+        break
 
-latest = requests.get('{0}/releases/latest'.format(repo_url))
-latest_version = latest.json().get('tag_name')
 print("The latest release: " + latest_version)
 
 url = '{0}/compare/{1}...master'.format(repo_url, latest_version)
@@ -77,6 +82,7 @@ result = r.json()
 commits = result.get('commits')
 
 print("The repo is " + repo)
+print("The product name is " + product_name)
 print("The repo_url is " + repo_url)
 print("The compare url is " + url)
 
@@ -189,12 +195,25 @@ with open(galaxy_path, 'w') as f:
 # 4. Update meta/runtime.yml
 meta_runtime_path = '{0}/meta/runtime.yml'.format(directory)
 modules_path = '{0}/plugins/modules/'.format(directory)
-aci_action_group = [f[:-3] for f in os.listdir(modules_path) if os.path.isfile(os.path.join(modules_path, f)) and f.startswith('aci_')]
-aci_action_group.sort()
-print("The action_group modules are: " + str(aci_action_group))
+action_group = [f[:-3] for f in os.listdir(modules_path) if os.path.isfile(os.path.join(modules_path, f)) and f != '__init__.py']
+action_group.sort()
+print("The action_group modules are: " + str(action_group))
+groups = {}
+for module in action_group:
+    module_group = module.split('_')[0]
+    if module_group in groups:
+        groups[module_group].append(module)
+    else:
+        groups[module_group] = [module]
+
 with open(meta_runtime_path) as f:
     dataRuntimeMap = yaml.safe_load(f)
-    dataRuntimeMap['action_groups']['aci'] = aci_action_group
+    dataRuntimeMap['action_groups'] = {}
+    if len(groups) > 1:
+        groups['all'] = action_group
+        dataRuntimeMap['action_groups'] = groups
+    else:
+        dataRuntimeMap['action_groups']['all'] = action_group
 with open(meta_runtime_path, 'w') as f:
     yaml.dump(dataRuntimeMap, f, sort_keys=False, default_flow_style=False, explicit_start=True, Dumper=Dumper)
 
