@@ -236,7 +236,7 @@ if annotation_unsupported_file.exists():
         f.write("ANNOTATION_UNSUPPORTED = [\n")
         for c in annotation_unsupported_gen(data):
             f.write(f'    "{c}",\n')
-        f.write("]")
+        f.write("]\n")
 
 # 6. Update CHANGELOG.rst & galaxy.yml and push a releasing PR
 os.system("chmod +x {0}/update_changelog.sh && {1}/update_changelog.sh {2} {3} {4}".format(script_dir, script_dir, directory, pr_name, target_version))
