@@ -6,3 +6,4 @@ certifi
 charset-normalizer
 idna
 antsibull-changelog
+yamlfix
