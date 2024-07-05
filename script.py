@@ -8,6 +8,7 @@ import yaml
 import datetime
 import os
 import re
+import yamlfix, yamlfix.model
 from pathlib import Path
 
 class Dumper(yaml.Dumper):
@@ -183,6 +184,11 @@ with open(change_log_path) as f:
     dataMap['releases'][target_version] = change_log
 with open(change_log_path, 'w') as f:
     yaml.dump(dataMap, f)
+    # Adjusts the output changelog.yaml to comply with strict ansible-lint requirements for Ansible Galaxy.
+    config = yamlfix.model.YamlfixConfig()
+    config.line_length = 120
+    config.none_representation = 'null'
+    yamlfix.fix_files([change_log_path], config=config)
 
 # edit changelog.yaml as we want
 # os.system("vim {0}".format(change_log_path))
