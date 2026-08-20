@@ -81,7 +81,7 @@ for i in range(10):
 
 print("The latest release: " + latest_version)
 
-url = '{0}/compare/{1}...master'.format(repo_url, latest_version)
+url = '{0}/compare/{1}...develop'.format(repo_url, latest_version)
 
 r = requests.get(url)
 result = r.json()
