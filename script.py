@@ -148,18 +148,24 @@ print("The major commits are: " + str(major))
 
 release_date = datetime.date.today()
 
-# propose the version number target version
-latest_version_split = latest_version[1:].split(".")
-if major:
-    latest_version_split[0] = str(int(latest_version_split[0])+1)
-    latest_version_split[1] = "0"
-    latest_version_split[2] = "0"
-elif minor:
-    latest_version_split[1] = str(int(latest_version_split[1])+1)
-    latest_version_split[2] = "0"
+# propose the version number target version, unless a manual override is provided
+target_version = os.getenv('TARGET_VERSION')
+if target_version:
+    target_version = target_version.lstrip('v')
 else:
-    latest_version_split[2] = str(int(latest_version_split[2])+1)
-target_version = ".".join(latest_version_split)
+    latest_version_split = latest_version[1:].split(".")
+    if major:
+        latest_version_split[0] = str(int(latest_version_split[0])+1)
+        latest_version_split[1] = "0"
+        latest_version_split[2] = "0"
+    elif minor:
+        latest_version_split[1] = str(int(latest_version_split[1])+1)
+        latest_version_split[2] = "0"
+    else:
+        latest_version_split[2] = str(int(latest_version_split[2])+1)
+    target_version = ".".join(latest_version_split)
+
+print("The target version: " + target_version)
 
 change_log = dict(
     changes = dict(
